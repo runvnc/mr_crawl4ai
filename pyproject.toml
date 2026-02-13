@@ -1,0 +1,15 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mr_crawl4ai"
+version = "0.1.0"
+authors = [
+    { name="runvnc" },
+]
+description = "Crawl4AI web fetching integration for Agent H"
+requires-python = ">=3.9"
+dependencies = [
+    "crawl4ai"
+]
