@@ -1,9 +1,11 @@
 print("Loading mod.py for Crawl4AI Web Fetcher")
 
 import asyncio
+import os
 from lib.providers.commands import command
 from crawl4ai import AsyncWebCrawler, BrowserConfig, CrawlerRunConfig, CacheMode
 from crawl4ai.deep_crawling import BFSDeepCrawlStrategy, DFSDeepCrawlStrategy
+from datetime import datetime
 
 @command()
 async def fetch_webpage(url, context=None):
@@ -141,5 +143,58 @@ async def crawl_site(url, max_pages=20, max_depth=2, page_limit=10000, total_lim
     except Exception as e:
         return f"Error crawling site {url}: {str(e)}"
 
+
+@command()
+async def screenshot_webpage(url, output_path=None, full_page=False, context=None):
+    """Capture a screenshot of a webpage.
+
+    Args:
+        url (str): The URL to screenshot.
+        output_path (str, optional): Path to save the screenshot. If not provided, saves to /tmp/screenshots/
+        full_page (bool, optional): Whether to capture the full page or just viewport. Defaults to False.
+        context (object, optional): The context object for the current session.
+
+    Returns:
+        str: Path to the saved screenshot or error message.
+
+    Example:
+        [
+            { "screenshot_webpage": { "url": "https://www.example.com", "full_page": true } }
+        ]
+    """
+    try:
+        # Generate default output path if not provided
+        if output_path is None:
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            filename = f"screenshot_{timestamp}.png"
+            output_dir = "/tmp/screenshots"
+            os.makedirs(output_dir, exist_ok=True)
+            output_path = os.path.join(output_dir, filename)
+
+        browser_config = BrowserConfig(
+            headless=True,
+            verbose=False,
+        )
+        run_config = CrawlerRunConfig(
+            cache_mode=CacheMode.ENABLED,
+            screenshot=True,
+        )
+        
+        async with AsyncWebCrawler(config=browser_config) as crawler:
+            result = await crawler.arun(
+                url=url,
+                config=run_config
+            )
+            
+            if result.success and result.screenshot:
+                # Save screenshot bytes to file
+                with open(output_path, 'wb') as f:
+                    f.write(result.screenshot)
+                return f"Screenshot saved to: {output_path}"
+            else:
+                return f"Failed to capture screenshot of {url}: {result.error_message if hasattr(result, 'error_message') else 'Unknown error'}"
+                
+    except Exception as e:
+        return f"Error capturing screenshot of {url}: {str(e)}"
 
 print("Loaded mod.py for Crawl4AI Web Fetcher")

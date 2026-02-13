@@ -10,6 +10,7 @@ This plugin provides enhanced web fetching capabilities for MindRoot agents, rep
 
 - **fetch_webpage** - Extract clean markdown from a single URL
 - **crawl_site** - Deep crawl entire sites following links with configurable depth and limits
+- **screenshot_webpage** - Capture screenshots of webpages
 
 ## Installation
 
@@ -59,6 +60,23 @@ Deep crawl a website starting from a URL, following internal links.
 - `strategy` (optional) - 'bfs' or 'dfs' (default: 'bfs')
 
 **Returns:** Formatted list of crawled pages with URL, depth, title, and content.
+
+---
+
+### screenshot_webpage
+
+Capture a screenshot of a webpage.
+
+```json
+{ "screenshot_webpage": { "url": "https://example.com", "full_page": true } }
+```
+
+**Parameters:**
+- `url` (required) - The URL to screenshot
+- `output_path` (optional) - Path to save the screenshot (default: auto-generated in /tmp/screenshots/)
+- `full_page` (optional) - Capture full page vs viewport (default: false)
+
+**Returns:** Path to the saved screenshot file.
 
 ## Why Crawl4AI?
 
